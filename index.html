@@ -8,23 +8,48 @@
         body {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: white;
             color: #A3A3A3; /* Color de texto oscuro */
-            font-family: "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; /* Fuente moderna */
-            font-size: 15px; /* Equivalente a 12 puntos en Word */
+            font-family: "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px; /* Espaciado interno para evitar que el texto toque los bordes */
+            max-width: 90%; /* Evita que el texto ocupe todo el ancho en pantallas grandes */
+            box-sizing: border-box;
+        }
+        .container div {
+            font-size: clamp(14px, 2.5vw, 18px); /* Tamaño de fuente dinámico con límites */
+            line-height: 1.5; /* Mejora la legibilidad */
         }
         a {
-            color: inherit; /* Mantiene el color del texto */
-            text-decoration: none; /* Elimina el subrayado */
-            cursor: pointer; /* Cambia el cursor a una mano al pasar sobre el enlace */
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease; /* Transición suave para el cambio de color */
+        }
+        a:hover {
+            color: #666; /* Color más oscuro al pasar el mouse */
+        }
+
+        /* Media query para pantallas más pequeñas */
+        @media (max-width: 600px) {
+            .container div {
+                font-size: clamp(12px, 4vw, 16px); /* Ajusta el tamaño de fuente para móviles */
+            }
+            .container {
+                padding: 15px; /* Menor padding en móviles */
+            }
         }
     </style>
 </head>
 <body>
-    <div><b>nice.trading</b> domain is for sale! Reach me on <a href="https://x.com/dnlmrls" target="_blank">x.com/dnlmrls</a></div>
+    <div class="container">
+        <div><b>nice.trading</b> domain is for sale! Reach me on <a href="https://x.com/dnlmrls" target="_blank">x.com/dnlmrls</a></div>
+    </div>
 </body>
 </html>
