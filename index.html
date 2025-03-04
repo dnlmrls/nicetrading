@@ -12,42 +12,81 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white;
-            color: #A3A3A3; /* Color de texto oscuro */
+            background-color: #FFFAF1; /* Nuevo color de fondo */
+            color: #A3A3A3;
             font-family: "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            position: relative; /* Para posicionar el texto de fondo */
+            overflow: hidden; /* Para evitar scrolls innecesarios */
         }
         .container {
             text-align: center;
-            padding: 20px; /* Espaciado interno para evitar que el texto toque los bordes */
-            max-width: 90%; /* Evita que el texto ocupe todo el ancho en pantallas grandes */
+            padding: 20px;
+            max-width: 90%;
             box-sizing: border-box;
+            position: relative; /* Para que esté por encima del texto de fondo */
+            z-index: 1; /* Asegura que el texto principal esté delante */
         }
         .container div {
-            font-size: clamp(14px, 2.5vw, 18px); /* Tamaño de fuente dinámico con límites */
-            line-height: 1.5; /* Mejora la legibilidad */
+            font-size: clamp(14px, 2.5vw, 18px);
+            line-height: 1.5;
         }
         a {
             color: inherit;
             text-decoration: none;
             cursor: pointer;
-            transition: color 0.3s ease; /* Transición suave para el cambio de color */
+            transition: color 0.3s ease;
         }
         a:hover {
-            color: #666; /* Color más oscuro al pasar el mouse */
+            color: #666;
+        }
+
+        /* Estilo para el texto de fondo animado */
+        .background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(50px, 20vw, 200px); /* Tamaño dinámico para que sea grande */
+            color: rgba(255, 255, 255, 0.2); /* Blanco con opacidad baja para que sea sutil */
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 0; /* Detrás del texto principal */
+            width: 80%; /* Ocupa el 80% del ancho de la pantalla */
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Animación para el texto de fondo */
+        @keyframes textChange {
+            0%, 15% { content: "BTCUSDC"; }
+            16%, 30% { content: "ADAUSDC"; }
+            31%, 45% { content: "ETHUSDC"; }
+            46%, 60% { content: "SOLUSDC"; }
+            61%, 75% { content: "BNBUSDC"; }
+            76%, 100% { content: "XRPUSDC"; }
+        }
+        .background-text::before {
+            content: "BTCUSDC";
+            animation: textChange 6s infinite step-end; /* Cambia cada segundo, 6 pares = 6s */
         }
 
         /* Media query para pantallas más pequeñas */
         @media (max-width: 600px) {
             .container div {
-                font-size: clamp(12px, 4vw, 16px); /* Ajusta el tamaño de fuente para móviles */
+                font-size: clamp(12px, 4vw, 16px);
             }
             .container {
-                padding: 15px; /* Menor padding en móviles */
+                padding: 15px;
+            }
+            .background-text {
+                font-size: clamp(30px, 15vw, 100px); /* Tamaño más pequeño en móviles */
             }
         }
     </style>
 </head>
 <body>
+    <div class="background-text"></div> <!-- Texto de fondo animado -->
     <div class="container">
         <div><b>nice.trading</b> domain is for sale! Reach me on <a href="https://x.com/dnlmrls" target="_blank">x.com/dnlmrls</a></div>
     </div>
