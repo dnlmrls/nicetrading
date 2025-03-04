@@ -47,7 +47,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: clamp(50px, 20vw, 200px); /* Tamaño dinámico */
-            color: #8B0000; /* Rojo sangre */
+            color: #FFFFFF; /* Blanco puro */
             font-weight: bold;
             white-space: nowrap;
             z-index: 0; /* Detrás del texto principal */
@@ -59,16 +59,16 @@
 
         /* Animación para el texto de fondo */
         @keyframes textChange {
-            0%, 15% { content: "BTCUSDC"; }
-            16%, 30% { content: "ADAUSDC"; }
-            31%, 45% { content: "ETHUSDC"; }
-            46%, 60% { content: "SOLUSDC"; }
-            61%, 75% { content: "BNBUSDC"; }
-            76%, 100% { content: "XRPUSDC"; }
+            0%, 16.66% { content: "BTCUSDC"; }  /* 2s / 12s = 16.66% */
+            16.67%, 33.32% { content: "ADAUSDC"; }
+            33.33%, 49.99% { content: "ETHUSDC"; }
+            50%, 66.66% { content: "SOLUSDC"; }
+            66.67%, 83.32% { content: "BNBUSDC"; }
+            83.33%, 100% { content: "XRPUSDC"; }
         }
         .background-text::before {
             content: "BTCUSDC";
-            animation: textChange 6s infinite step-end; /* Cambia cada segundo */
+            animation: textChange 12s infinite step-end; /* Cambia cada 2 segundos, ciclo de 12s */
         }
 
         /* Media query para pantallas más pequeñas */
