@@ -12,18 +12,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #FFFAF1; /* Nuevo color de fondo */
-            color: #A3A3A3;
+            background-color: #FFFAF1; /* Fondo claro */
+            color: #A3A3A3; /* Color del texto principal */
             font-family: "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            position: relative; /* Para posicionar el texto de fondo */
-            overflow: hidden; /* Para evitar scrolls innecesarios */
+            position: relative;
+            overflow: hidden;
         }
         .container {
             text-align: center;
             padding: 20px;
             max-width: 90%;
             box-sizing: border-box;
-            position: relative; /* Para que esté por encima del texto de fondo */
+            position: relative;
             z-index: 1; /* Asegura que el texto principal esté delante */
         }
         .container div {
@@ -46,8 +46,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(50px, 20vw, 200px); /* Tamaño dinámico para que sea grande */
-            color: rgba(255, 255, 255, 0.2); /* Blanco con opacidad baja para que sea sutil */
+            font-size: clamp(50px, 20vw, 200px); /* Tamaño dinámico */
+            color: #8B0000; /* Rojo sangre */
             font-weight: bold;
             white-space: nowrap;
             z-index: 0; /* Detrás del texto principal */
@@ -68,7 +68,7 @@
         }
         .background-text::before {
             content: "BTCUSDC";
-            animation: textChange 6s infinite step-end; /* Cambia cada segundo, 6 pares = 6s */
+            animation: textChange 6s infinite step-end; /* Cambia cada segundo */
         }
 
         /* Media query para pantallas más pequeñas */
