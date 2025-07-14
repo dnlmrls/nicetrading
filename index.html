@@ -1,186 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nice Trading</title>
-    <style>
-        body {
-            font-family: Helvetica, Arial, sans-serif; /* Helvetica World no es estándar, usamos Helvetica como fallback */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #ffffff;
-            color: #000000;
-            overflow: hidden;
-        }
+  <meta charset="utf-8">
+  <title>Nice Trading Algorithm</title>
 
-        .logo {
-            width: 300px; /* Ajusta según el tamaño deseado */
-            max-width: 80%;
-            margin-bottom: 40px;
-        }
+  <!-- Mobile & hi‑DPI friendly -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .profile-container {
-            position: relative;
-            margin: 20px 0;
-        }
+  <!-- Si tienes la licencia de Helvetica World, enlázala aquí.
+       Mientras tanto, usamos la pila estándar. -->
+  <style>
+    @font-face {
+      /*  Descomenta y ajusta si subes Helvetica World a tu repo
+      font-family: "Helvetica World";
+      src: url("HelveticaWorld.woff2") format("woff2");
+      font-weight: normal;
+      font-style: normal;
+      */
+    }
 
-        .profile-img {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-        }
+    :root {
+      --flag-width: 60px;           /* cambia y el alto se auto‑ajusta */
+      --avatar-size: 120px;
+      --tooltip-bg: #000;
+      --tooltip-fg: #fff;
+    }
 
-        .profile-tooltip {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #f9f9f9;
-            padding: 15px;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            z-index: 10;
-            text-align: center;
-            font-size: 14px;
-        }
+    /* Layout base */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Helvetica World","Helvetica Neue",Helvetica,Arial,sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #fff;
+    }
 
-        .profile-container:hover .profile-tooltip {
-            display: block;
-        }
+    .stage {
+      position: relative;
+      text-align: center;
+      width: 100%;
+      max-width: 1000px;
+    }
 
-        .flag-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 36px;
-            cursor: pointer;
-        }
+    /* Logo */
+    .logo {
+      width: 80%;
+      max-width: 900px;
+      height: auto;
+    }
 
-        .flag {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #000000; /* Opcional para bordes visibles */
-        }
+    /* Foto de perfil */
+    .profile {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+    }
+    .avatar {
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 0 0 12px rgba(0,0,0,.25);
+      cursor: pointer;
+    }
 
-        .stripe {
-            flex: 1;
-        }
+    /* Bandera de Luxemburgo hecha en CSS */
+    .flag {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: var(--flag-width);
+      height: calc(var(--flag-width) * 2 / 3); /* proporción 3:2 */
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #fff;
+      box-shadow: 0 0 6px rgba(0,0,0,.25);
+      cursor: pointer;
+    }
+    .flag div { flex: 1; }
+    .flag .red   { background: #ed2939; }
+    .flag .white { background: #ffffff; }
+    .flag .blue  { background: #00a1de; }
 
-        .red {
-            background-color: #ED2939; /* Rojo de la bandera de Luxemburgo */
-        }
+    /* Tooltips (solo CSS) */
+    .tooltip {
+      position: absolute;
+      left: 105%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--tooltip-bg);
+      color: var(--tooltip-fg);
+      padding: .4rem .8rem;
+      border-radius: 4px;
+      font-size: .85rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    .profile:hover .tooltip,
+    .flag:hover .tooltip { opacity: 1; }
 
-        .white {
-            background-color: #FFFFFF;
-        }
+    /* Tooltip para la bandera (aparece arriba de la bandera) */
+    .flag .tooltip {
+      left: 50%;
+      bottom: 105%;
+      transform: translateX(-50%);
+    }
 
-        .blue {
-            background-color: #00A3E0; /* Azul claro de la bandera de Luxemburgo */
-        }
-
-        .flag-tooltip {
-            display: none;
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            z-index: 10;
-            text-align: right;
-            font-size: 14px;
-        }
-
-        .flag-container:hover .flag-tooltip {
-            display: block;
-        }
-
-        /* Responsive para móvil */
-        @media (max-width: 600px) {
-            body {
-                justify-content: flex-start;
-                padding: 20px;
-                height: auto;
-                overflow: auto;
-            }
-
-            .logo {
-                margin-bottom: 20px;
-            }
-
-            .profile-container {
-                margin: 20px 0;
-            }
-
-            .profile-tooltip {
-                position: static;
-                transform: none;
-                white-space: normal;
-                margin-top: 10px;
-            }
-
-            .flag-container {
-                position: relative;
-                bottom: auto;
-                right: auto;
-                margin: 20px auto 0;
-                width: 80px;
-                height: 48px;
-            }
-
-            .flag-tooltip {
-                position: static;
-                white-space: normal;
-                margin-top: 10px;
-                text-align: center;
-            }
-
-            /* Mostrar tooltips por defecto en móvil si se desea, pero según descripción, hover no aplica, así que mantenemos ocultos hasta interacción (touch simula hover) */
-        }
-    </style>
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      :root { --avatar-size: 90px; --flag-width: 45px; }
+      .logo { width: 90%; }
+      .profile { left: 50%; top: 1rem; transform: translateX(-50%); }
+      .flag { right: 1rem; bottom: 1rem; }
+    }
+  </style>
 </head>
+
 <body>
-    <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading" class="logo">
+  <main class="stage">
 
-    <div class="profile-container">
-        <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales" class="profile-img">
-        <div class="profile-tooltip">
-            <!-- Texto placeholder basado en descripción; reemplaza con el texto exacto de la imagen 2.png si lo conoces -->
-            Daniel Morales<br>
-            Founder & CEO<br>
-            Expert in Algorithmic Trading
-        </div>
+    <!-- Logo -->
+    <img class="logo"
+         src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png"
+         alt="Nice Trading Algorithm logo">
+
+    <!-- Foto + tooltip -->
+    <div class="profile">
+      <img class="avatar"
+           src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg"
+           alt="Foto de perfil">
+      <span class="tooltip">¡Hola! Soy Daniel.<br>Cybersecurity Mgr.</span>
     </div>
 
-    <div class="flag-container">
-        <div class="flag">
-            <div class="stripe red"></div>
-            <div class="stripe white"></div>
-            <div class="stripe blue"></div>
-        </div>
-        <div class="flag-tooltip">
-            <!-- Texto placeholder basado en descripción; reemplaza con el texto exacto de la imagen 2.png si lo conoces -->
-            Registered in Luxembourg<br>
-            EU Compliant<br>
-            Secure Trading Platform
-        </div>
+    <!-- Bandera + tooltip -->
+    <div class="flag">
+      <div class="red"></div><div class="white"></div><div class="blue"></div>
+      <span class="tooltip">Luxembourg</span>
     </div>
+
+  </main>
 </body>
 </html>
