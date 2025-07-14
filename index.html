@@ -1,94 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nice Trading</title>
     <style>
         body {
+            font-family: Helvetica, Arial, sans-serif; /* Helvetica World no es estándar, usamos Helvetica como fallback */
             margin: 0;
             padding: 0;
-            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            background: linear-gradient(to right, #F8F8F8, #F2F2F2); /* Degradado ajustado */
-            color: #757575; /* Color del texto principal más oscuro */
-            font-family: "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            position: relative;
+            justify-content: center;
+            height: 100vh;
+            background-color: #ffffff;
+            color: #000000;
             overflow: hidden;
         }
-        .container {
-            text-align: center;
-            padding: 20px;
-            max-width: 90%;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 1; /* Asegura que el texto principal esté delante */
-        }
-        .container div {
-            font-size: clamp(14px, 2.5vw, 18px);
-            line-height: 1.5;
-        }
-        a {
-            color: inherit;
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        a:hover {
-            color: #666;
+
+        .logo {
+            width: 300px; /* Ajusta según el tamaño deseado */
+            max-width: 80%;
+            margin-bottom: 40px;
         }
 
-        /* Estilo para el texto de fondo animado */
-        .background-text {
+        .profile-container {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-tooltip {
+            display: none;
             position: absolute;
-            top: 50%;
+            top: 100%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(50px, 20vw, 200px); /* Tamaño dinámico */
-            color: #FFFFFF; /* Blanco puro */
-            font-weight: bold;
+            transform: translateX(-50%);
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
-            z-index: 0; /* Detrás del texto principal */
-            width: 80%; /* Ocupa el 80% del ancho de la pantalla */
+            z-index: 10;
             text-align: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 14px;
         }
 
-        /* Animación para el texto de fondo */
-        @keyframes textChange {
-            0%, 16.66% { content: "BTCUSDC"; }  /* 2s / 12s = 16.66% */
-            16.67%, 33.32% { content: "ADAUSDC"; }
-            33.33%, 49.99% { content: "ETHUSDC"; }
-            50%, 66.66% { content: "SOLUSDC"; }
-            66.67%, 83.32% { content: "BNBUSDC"; }
-            83.33%, 100% { content: "XRPUSDC"; }
-        }
-        .background-text::before {
-            content: "BTCUSDC";
-            animation: textChange 12s infinite step-end; /* Cambia cada 2 segundos, ciclo de 12s */
+        .profile-container:hover .profile-tooltip {
+            display: block;
         }
 
-        /* Media query para pantallas más pequeñas */
+        .flag-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 36px;
+            cursor: pointer;
+        }
+
+        .flag {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #000000; /* Opcional para bordes visibles */
+        }
+
+        .stripe {
+            flex: 1;
+        }
+
+        .red {
+            background-color: #ED2939; /* Rojo de la bandera de Luxemburgo */
+        }
+
+        .white {
+            background-color: #FFFFFF;
+        }
+
+        .blue {
+            background-color: #00A3E0; /* Azul claro de la bandera de Luxemburgo */
+        }
+
+        .flag-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            z-index: 10;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .flag-container:hover .flag-tooltip {
+            display: block;
+        }
+
+        /* Responsive para móvil */
         @media (max-width: 600px) {
-            .container div {
-                font-size: clamp(12px, 4vw, 16px);
+            body {
+                justify-content: flex-start;
+                padding: 20px;
+                height: auto;
+                overflow: auto;
             }
-            .container {
-                padding: 15px;
+
+            .logo {
+                margin-bottom: 20px;
             }
-            .background-text {
-                font-size: clamp(30px, 15vw, 100px); /* Tamaño más pequeño en móviles */
+
+            .profile-container {
+                margin: 20px 0;
             }
+
+            .profile-tooltip {
+                position: static;
+                transform: none;
+                white-space: normal;
+                margin-top: 10px;
+            }
+
+            .flag-container {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin: 20px auto 0;
+                width: 80px;
+                height: 48px;
+            }
+
+            .flag-tooltip {
+                position: static;
+                white-space: normal;
+                margin-top: 10px;
+                text-align: center;
+            }
+
+            /* Mostrar tooltips por defecto en móvil si se desea, pero según descripción, hover no aplica, así que mantenemos ocultos hasta interacción (touch simula hover) */
         }
     </style>
 </head>
 <body>
-    <div class="background-text"></div> <!-- Texto de fondo animado -->
-    <div class="container">
-        <div>https://<b>nice.trading</b> domain is for sale, <a href="https://x.com/dnlmrls" target="_blank">reach me out at X</a></div>
+    <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading" class="logo">
+
+    <div class="profile-container">
+        <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales" class="profile-img">
+        <div class="profile-tooltip">
+            <!-- Texto placeholder basado en descripción; reemplaza con el texto exacto de la imagen 2.png si lo conoces -->
+            Daniel Morales<br>
+            Founder & CEO<br>
+            Expert in Algorithmic Trading
+        </div>
+    </div>
+
+    <div class="flag-container">
+        <div class="flag">
+            <div class="stripe red"></div>
+            <div class="stripe white"></div>
+            <div class="stripe blue"></div>
+        </div>
+        <div class="flag-tooltip">
+            <!-- Texto placeholder basado en descripción; reemplaza con el texto exacto de la imagen 2.png si lo conoces -->
+            Registered in Luxembourg<br>
+            EU Compliant<br>
+            Secure Trading Platform
+        </div>
     </div>
 </body>
 </html>
