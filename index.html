@@ -1,221 +1,292 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nice Trading</title>
+    <title>Nice Trading Algorithm</title>
     <style>
-        body {
-            background-color: #F8F8F8;
-            font-family: Helvetica, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        @import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;500;700&display=swap');
+        
+        * {
             margin: 0;
-            color: #000;
+            padding: 0;
+            box-sizing: border-box;
         }
-
+        
+        body {
+            font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
         .container {
-            text-align: center;
             position: relative;
-            max-width: 800px;
-            padding: 20px;
-        }
-
-        .profile-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .profile {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .daniel-bubble {
-            position: absolute;
-            top: -50px;
-            left: -20px;
-            background-color: #4CAF50;
-            color: #000;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            display: none;
-            white-space: nowrap;
-        }
-
-        .profile-wrapper:hover .daniel-bubble {
-            display: block;
-        }
-
-        .founder-bubble {
-            background-color: #4CAF50;
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 30px;
-            margin-top: 20px;
-            display: inline-flex;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
             align-items: center;
-            font-size: 16px;
-            font-weight: bold;
+            justify-content: center;
         }
-
-        .small-profile {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
+        
+        /* Logo centrado */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .gray {
-            color: #808080;
-            font-weight: normal;
-            margin-left: 5px;
-        }
-
+        
         .logo {
-            margin-top: 50px;
-        }
-
-        .logo img {
-            width: 300px;
+            max-width: 400px;
+            width: 100%;
             height: auto;
         }
-
-        .subtitle {
-            color: #808080;
+        
+        /* Foto de Daniel */
+        .daniel-section {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            cursor: pointer;
+        }
+        
+        .daniel-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .daniel-photo:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Tooltip de Daniel */
+        .daniel-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #40e86b;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            white-space: nowrap;
             font-size: 14px;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-weight: 500;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(64, 232, 107, 0.3);
         }
-
-        .flag-wrapper {
+        
+        .daniel-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: #40e86b;
+        }
+        
+        .daniel-section:hover .daniel-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        .tooltip-line {
+            display: block;
+            margin: 2px 0;
+        }
+        
+        .founder-text {
+            font-weight: 600;
+        }
+        
+        .edge-text {
+            color: #e8e8e8;
+            font-weight: 300;
+        }
+        
+        /* Sección de Luxemburgo */
+        .luxembourg-section {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            text-align: right;
+            cursor: pointer;
+        }
+        
+        .luxembourg-text {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 300;
+        }
+        
+        .luxembourg-flag {
+            width: 40px;
+            height: 25px;
+            margin-left: auto;
             position: relative;
-            display: inline-block;
-            margin-left: 5px;
-        }
-
-        .flag {
-            width: 30px;
-            height: 20px;
-            display: flex;
-            flex-direction: column;
             border: 1px solid #ddd;
         }
-
-        .flag div {
-            flex: 1;
-        }
-
-        .red {
-            background-color: #ED2939;
-        }
-
-        .white {
-            background-color: #FFFFFF;
-        }
-
-        .blue {
-            background-color: #00A3E0;
-        }
-
-        .lux-bubble {
+        
+        .luxembourg-flag::before,
+        .luxembourg-flag::after {
+            content: '';
             position: absolute;
-            bottom: -40px;
-            right: -80px;
-            background-color: #4CAF50;
-            color: #000;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: bold;
+            width: 100%;
+            height: 33.33%;
+        }
+        
+        .luxembourg-flag::before {
+            top: 0;
+            background-color: #ed2939;
+        }
+        
+        .luxembourg-flag {
+            background-color: #ffffff;
+        }
+        
+        .luxembourg-flag::after {
+            bottom: 0;
+            background-color: #00a1de;
+        }
+        
+        /* Tooltip de Luxemburgo */
+        .luxembourg-tooltip {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background-color: #40e86b;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(64, 232, 107, 0.3);
+        }
+        
+        .luxembourg-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 15px;
+            border: 8px solid transparent;
+            border-top-color: #40e86b;
+        }
+        
+        .luxembourg-section:hover .luxembourg-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-5px);
+        }
+        
+        /* Badge para móvil */
+        .edge-badge {
             display: none;
-            white-space: nowrap;
         }
-
-        .flag-wrapper:hover .lux-bubble {
-            display: block;
-        }
-
-        /* Responsive design for mobile */
-        @media (max-width: 600px) {
+        
+        /* Versión móvil */
+        @media (max-width: 768px) {
             .container {
-                padding: 10px;
+                flex-direction: column;
+                padding: 40px 20px;
+                text-align: center;
             }
-
-            .profile {
-                width: 150px;
-                height: 150px;
+            
+            .daniel-section {
+                position: static;
+                order: 1;
+                margin-bottom: 30px;
             }
-
-            .daniel-bubble {
-                top: -40px;
-                left: 0;
+            
+            .daniel-photo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .logo-section {
+                order: 2;
+                margin-bottom: 30px;
+            }
+            
+            .logo {
+                max-width: 250px;
+            }
+            
+            .edge-badge {
+                display: inline-block;
+                order: 3;
+                background-color: #40e86b;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 16px;
+                font-weight: 500;
+                margin-bottom: 40px;
+            }
+            
+            .luxembourg-section {
+                position: static;
+                order: 4;
+                text-align: center;
+            }
+            
+            .luxembourg-text {
+                color: #999;
                 font-size: 14px;
+                margin-bottom: 5px;
             }
-
-            .founder-bubble {
-                padding: 8px 16px;
-                font-size: 14px;
+            
+            .luxembourg-flag {
+                margin: 0 auto;
+                width: 30px;
+                height: 20px;
             }
-
-            .small-profile {
-                width: 25px;
-                height: 25px;
-            }
-
-            .logo img {
-                width: 200px;
-            }
-
-            .subtitle {
-                font-size: 12px;
-            }
-
-            .flag {
-                width: 25px;
-                height: 16px;
-            }
-
-            .lux-bubble {
-                bottom: -35px;
-                right: -70px;
-                font-size: 14px;
+            
+            /* Ocultar tooltips en móvil */
+            .daniel-tooltip,
+            .luxembourg-tooltip {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="profile-wrapper">
-            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales" class="profile">
-            <div class="daniel-bubble">Daniel</div>
-        </div>
-        <div class="founder-bubble">
-            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Small Profile" class="small-profile">
-            Founder<span class="gray">Edge in progress.</span>
-        </div>
-        <div class="logo">
-            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading Algorithm">
-        </div>
-        <div class="subtitle">
-            Developing with love from
-            <div class="flag-wrapper">
-                <div class="flag">
-                    <div class="red"></div>
-                    <div class="white"></div>
-                    <div class="blue"></div>
-                </div>
-                <div class="lux-bubble">Luxembourg</div>
+        <!-- Foto de Daniel con tooltip -->
+        <div class="daniel-section">
+            <div class="daniel-tooltip">
+                <span class="tooltip-line">Daniel</span>
+                <span class="tooltip-line founder-text">Founder</span>
+                <span class="tooltip-line edge-text">Edge in progress.</span>
             </div>
+            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales" class="daniel-photo">
+        </div>
+        
+        <!-- Logo centrado -->
+        <div class="logo-section">
+            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading Algorithm" class="logo">
+        </div>
+        
+        <!-- Badge para móvil -->
+        <div class="edge-badge">Edge in Progress</div>
+        
+        <!-- Sección de Luxemburgo -->
+        <div class="luxembourg-section">
+            <div class="luxembourg-tooltip">Luxembourg</div>
+            <div class="luxembourg-text">Developing with love from Luxembourg</div>
+            <div class="luxembourg-flag"></div>
         </div>
     </div>
 </body>
