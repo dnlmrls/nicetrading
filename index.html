@@ -1,383 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Nice Trading Algorithm</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Helvetica World fallback -->
-  <style>
-    @font-face {
-      font-family: 'Helvetica World';
-      src: local('Helvetica Neue'), local('Helvetica'), Arial, sans-serif;
-      font-display: swap;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: 'Helvetica World', Helvetica, Arial, sans-serif;
-      background: #fafafa;
-      color: #222;
-      min-height: 100vh;
-    }
-    body {
-      min-height: 100vh;
-      min-width: 100vw;
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .main-content {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nice Trading</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Helvetica', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-    .profile-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      margin-bottom: 60px;
-      margin-top: 15vh;
-    }
+        .container {
+            text-align: center;
+        }
 
-    .profile-photo-container {
-      position: relative;
-      width: 56px;
-      height: 56px;
-      margin: 0 4px;
-      transition: filter 0.15s;
-      z-index: 2;
-    }
+        .founder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-    .profile-photo {
-      width: 56px;
-      height: 56px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: none;
-      background: #eaeaea;
-      display: block;
-      box-shadow: 0 1px 6px 0 #b4b4b442;
-      margin: 0;
-      padding: 0;
-    }
+        .button {
+            background-color: #34c759;
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
 
-    /* Daniel bubble */
-    .profile-bubble {
-      position: absolute;
-      left: 50%;
-      top: 0;
-      transform: translate(-65%, -115%);
-      background: #5cff71;
-      color: #222;
-      font-weight: bold;
-      font-size: 18px;
-      border-radius: 14px 14px 14px 3px;
-      padding: 2px 20px 6px 14px;
-      box-shadow: 0 2px 10px #21db4f24;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-      z-index: 4;
-      line-height: 1.3;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-    }
-    .profile-photo-container:hover .profile-bubble, 
-    .profile-photo-container:focus .profile-bubble {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .profile-bubble::after {
-      content: "";
-      position: absolute;
-      left: 30px;
-      bottom: -12px;
-      width: 0;
-      height: 0;
-      border-left: 9px solid transparent;
-      border-right: 9px solid transparent;
-      border-top: 12px solid #5cff71;
-    }
+        .small-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
 
-    /* Founder bubble */
-    .founder-bubble {
-      background: #5cff71;
-      color: #222;
-      font-weight: bold;
-      font-size: 22px;
-      border-radius: 30px;
-      padding: 6px 34px 7px 24px;
-      margin-left: 12px;
-      margin-right: 10px;
-      box-shadow: 0 2px 10px #21db4f21;
-      line-height: 1.4;
-      display: flex;
-      align-items: center;
-    }
+        .edge {
+            color: #8e8e93;
+            font-size: 16px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
 
-    .edge-in-progress {
-      color: #bbb;
-      font-size: 21px;
-      font-weight: 400;
-      letter-spacing: 0;
-      margin-left: 4px;
-      line-height: 1.3;
-    }
+        .logo {
+            margin-top: 100px;
+            margin-bottom: 100px;
+        }
 
-    /* Logo section */
-    .logo-section {
-      position: absolute;
-      bottom: 76px;
-      left: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-img {
-      width: 300px;
-      max-width: 90vw;
-      height: auto;
-      display: block;
-    }
+        .logo img {
+            width: 400px;
+        }
 
-    /* Luxembourg flag & info */
-    .lux-section {
-      position: absolute;
-      bottom: 30px;
-      right: 32px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      z-index: 10;
-    }
-    .lux-label-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-    .luxembourg-bubble {
-      background: #5cff71;
-      color: #222;
-      font-weight: bold;
-      font-size: 20px;
-      border-radius: 13px 13px 13px 3px;
-      padding: 2px 24px 6px 14px;
-      box-shadow: 0 2px 10px #21db4f21;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s;
-      margin-bottom: 5px;
-      margin-right: 8px;
-      white-space: nowrap;
-      position: absolute;
-      right: 5px;
-      bottom: 54px;
-      z-index: 22;
-      display: flex;
-      align-items: center;
-    }
-    .lux-section:hover .luxembourg-bubble,
-    .lux-section:focus-within .luxembourg-bubble,
-    .lux-flag:focus + .luxembourg-bubble {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .luxembourg-bubble::after {
-      content: "";
-      position: absolute;
-      right: 22px;
-      top: 38px;
-      width: 0;
-      height: 0;
-      border-left: 11px solid transparent;
-      border-right: 11px solid transparent;
-      border-top: 13px solid #5cff71;
-    }
-    .lux-info {
-      display: flex;
-      align-items: center;
-      font-size: 15px;
-      color: #bbb;
-      margin-bottom: 6px;
-      font-weight: 400;
-      user-select: none;
-    }
-    .lux-info strong {
-      color: #777;
-      font-weight: 500;
-    }
-    .lux-flag {
-      width: 48px;
-      height: 29px;
-      border-radius: 3px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 1px 6px #b4b4b426;
-      background: linear-gradient(
-        to bottom,
-        #ef3340 0 33%,
-        #fff 33% 66%,
-        #00a2e5 66% 100%
-        );
-      margin-left: 6px;
-      margin-top: 2px;
-      display: block;
-      transition: box-shadow 0.18s;
-      cursor: pointer;
-    }
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8e8e93;
+            font-size: 14px;
+        }
 
-    /* Responsive Desktop -> Mobile */
-    @media (max-width: 900px) {
-      .logo-img { width: 220px; }
-      .profile-row { margin-bottom: 40px; margin-top: 8vh;}
-      .logo-section { bottom: 60px; }
-    }
-    @media (max-width: 599px) {
-      .main-content {
-        justify-content: flex-start;
-      }
-      .profile-row {
-        margin-top: 44vw;
-        margin-bottom: 0;
-        flex-direction: column;
-        gap: 7vw;
-      }
-      .logo-section {
-        position: static;
-        margin: 38vw 0 0 0;
-      }
-      .lux-section {
-        position: static;
-        align-items: center;
-        margin-top: 9vw;
-        margin-bottom: 19px;
-      }
-      .lux-info {
-        font-size: 15px;
-        justify-content: center;
-      }
-      .lux-flag {
-        width: 40px;
-        height: 25px;
-      }
-      .profile-bubble,
-      .luxembourg-bubble {
-        position: static;
-        margin: 0 auto 2vw auto;
-        left: unset; right: unset; top: unset; bottom: unset;
-        transform: none;
-        opacity: 1 !important;
-        pointer-events: none;
-        box-shadow: 0 0px 8px #21db4f22;
-      }
-      .profile-photo-container:hover .profile-bubble,
-      .lux-section:hover .luxembourg-bubble {
-        opacity: 1 !important;
-      }
-      .profile-bubble::after,
-      .luxembourg-bubble::after {
-        display: none;
-      }
-      .founder-bubble {
-        font-size: 20px;
-        margin-left: 0px;
-        margin-right: 0px;
-        padding: 6px 28px 7px 18px;
-      }
-      .logo-img {
-        width: 180px;
-      }
-    }
+        .flag {
+            width: 24px;
+            height: 16px;
+            display: flex;
+            flex-direction: column;
+            margin-left: 5px;
+            position: relative;
+        }
 
-    /* -- Movil Version Special Layout -- */
-    @media (max-width: 520px) {
-      .main-content {
-        padding-top: 9vw;
-      }
-      body {
-        min-width: unset;
-        min-height: unset;
-        width: 100%;
-        height: auto;
-      }
-      .profile-row {
-        flex-direction: column;
-        width: 98vw;
-        gap: 16px;
-        margin-top: 70vw;
-      }
-      .logo-section {
-        margin-top: 20vw;
-        margin-bottom: 8vw;
-        width: 100vw;
-      }
-      .logo-img {
-        width: 150px;
-      }
-      .lux-flag {
-        width: 28vw;
-        min-width: 26px;
-        max-width: 60px;
-        height: 7vw;
-        min-height: 13px;
-        max-height: 32px;
-      }
-      .lux-info {
-        font-size: 4vw;
-      }
-      .founder-bubble {
-        font-size: 18px;
-        max-width: 230px;
-        text-align: center;
-        word-break: keep-all;
-        white-space: pre-line;
-      }
-      .edge-in-progress {
-        font-size: 16px;
-      }
-    }
-  </style>
+        .red {
+            background-color: #ed2939;
+            height: 33.33%;
+        }
+
+        .white {
+            background-color: #ffffff;
+            height: 33.33%;
+        }
+
+        .blue {
+            background-color: #00a1de;
+            height: 33.33%;
+        }
+
+        .hover-bubble {
+            display: none;
+            background-color: #34c759;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            position: absolute;
+            white-space: nowrap;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .founder .hover-bubble {
+            top: -50px;
+            left: -20px;
+        }
+
+        .flag .hover-bubble {
+            top: -10px;
+            left: 30px;
+        }
+
+        .small-img:hover ~ .hover-bubble {
+            display: block;
+        }
+
+        .flag:hover .hover-bubble {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .logo img {
+                width: 250px;
+            }
+
+            .small-img {
+                display: none;
+            }
+
+            .button span {
+                display: none;
+            }
+
+            .button {
+                font-weight: normal;
+            }
+
+            .button:after {
+                content: "Edge in progress.";
+            }
+
+            .edge {
+                display: none;
+            }
+
+            .flag {
+                display: none;
+            }
+
+            .footer p:after {
+                content: " Luxembourg.";
+            }
+
+            .hover-bubble {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="main-content">
-
-    <!-- PROFILE/FOUNDER/Text row -->
-    <div class="profile-row">
-      <div class="profile-photo-container" tabindex="0">
-        <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales" class="profile-photo">
-        <div class="profile-bubble">Daniel</div>
-      </div>
-      <div class="founder-bubble">Founder</div>
-      <span class="edge-in-progress">Edge in progress.</span>
+    <div class="container">
+        <div class="founder">
+            <div class="button">
+                <img class="small-img" src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales">
+                <div class="hover-bubble">Daniel</div>
+                <span>Founder</span>
+            </div>
+            <span class="edge">Edge in progress.</span>
+        </div>
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading Algorithm">
+        </div>
+        <div class="footer">
+            <p>Developing with love from</p>
+            <div class="flag">
+                <div class="red"></div>
+                <div class="white"></div>
+                <div class="blue"></div>
+                <div class="hover-bubble">Luxembourg</div>
+            </div>
+        </div>
     </div>
-
-    <!-- LOGO section -->
-    <div class="logo-section">
-      <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading Algorithm logo" class="logo-img">
-    </div>
-
-    <!-- Luxembourg section -->
-    <div class="lux-section" tabindex="0">
-      <div class="lux-label-container">
-        <div class="lux-flag" tabindex="0" aria-label="Luxembourg flag"></div>
-        <div class="luxembourg-bubble">Luxembourg</div>
-      </div>
-      <div class="lux-info">Delevoping<br>with love from <span style="margin-left:3px;"><strong>Luxembourg</strong></span></div>
-    </div>
-  </div>
 </body>
 </html>
