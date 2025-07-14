@@ -175,7 +175,7 @@
       font-size: 13px;
       color: #bdbdbd;
       gap: 5px;
-      margin-bottom: 9px;
+      margin-bottom: 7px;
       font-weight: 400;
     }
     /* Palabra "Luxembourg" destacada */
@@ -211,43 +211,6 @@
       margin-top: 0;
       transition: box-shadow 0.23s;
       cursor: pointer;
-    }
-    /* Burbuja "Luxembourg", como la de Daniel */
-    .lux-bubble {
-      position: absolute;
-      right: 50%;
-      top: -41px;
-      transform: translateX(50%);
-      background: #5cff71;
-      color: #191919;
-      font-size: 19px;
-      font-weight: 700;
-      padding: 4px 24px 7px 16px;
-      border-radius: 12px 12px 18px 6px;
-      box-shadow: 0 1px 8px 0 #21db4f25;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.14s;
-      z-index: 18;
-      letter-spacing: 0;
-      text-align: center;
-    }
-    /* Flechita de la burbuja de la bandera */
-    .lux-bubble::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      right: 22px;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 12px solid #5cff71;
-    }
-    /* Mostrar burbuja solo cuando la bandera tiene hover o foco */
-    .lux-flag:hover + .lux-bubble,
-    .lux-flag:focus + .lux-bubble {
-      opacity: 1;
-      pointer-events: all;
     }
 
     /* ----- Responsive: Ajustes para pantallas pequeñas ----- */
@@ -317,13 +280,7 @@
       <!-- Burbuja verde con "Founder" -->
       <span class="founder-bubble">Gathering Experience</span>
       <!-- Texto en gris claro -->
-      <span class="edge-progress">Edge in progress.</span>
-    </div>
-
-    <!-- Logo grande Nice Trading Algorithm -->
-    <div class="logo-section">
-      <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" 
-           alt="Nice Trading Logo" class="logo-img">
+      <span class="edge-progress">Edge in progress...</span>
     </div>
 
     <!-- Esquina derecha inferior: texto y bandera Luxemburgo -->
