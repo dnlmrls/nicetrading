@@ -1,313 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Nice Trading Algorithm</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    @font-face {
-      font-family: 'Helvetica World';
-      src: local('Helvetica Neue'), local('Helvetica'), Arial, sans-serif;
-    }
-    body, html {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      background: #fafafa;
-      font-family: 'Helvetica World', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      overflow-x: hidden;
-    }
-    body {
-      min-height: 100vh;
-      min-width: 100vw;
-    }
-    .main-container {
-      height: 100vh;
-      width: 100vw;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nice Trading</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Helvetica', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-    /* Top space -- needed to center vertically with respect to design */
-    .top-spacer {
-      height: 18vh;
-      min-height: 120px;
-      width: 100vw;
-      flex-shrink: 0;
-    }
+        .container {
+            text-align: center;
+        }
 
-    .profile-section {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      position: relative;
-      margin-bottom: 60px;
-    }
+        .founder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-    .daniel-container {
-      position: relative;
-      width: 64px;
-      height: 64px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      margin-right: 12px;
-    }
-    .daniel-img {
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      object-fit: cover;
-      display: block;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
-      background: #eee;
-      border: none;
-    }
+        .button {
+            background-color: #34c759;
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
 
-    /* Daniel bubble */
-    .daniel-bubble {
-      position: absolute;
-      left: 50%;
-      top: -34px;
-      transform: translateX(-50%);
-      background: #5cff71;
-      color: #191919;
-      font-weight: 700;
-      font-size: 20px;
-      padding: 4px 22px 7px 18px;
-      border-radius: 10px 10px 16px 4px;
-      box-shadow: 0 1px 8px 0 #21db4f16;
-      opacity: 0;
-      pointer-events: none;
-      white-space: nowrap;
-      transition: opacity 0.15s;
-      z-index: 5;
-      letter-spacing: 0;
-      text-align: center;
-    }
-    .daniel-bubble::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 99%;
-      transform: translateX(-50%);
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 12px solid #5cff71;
-    }
-    .daniel-container:hover .daniel-bubble, .daniel-container:focus-within .daniel-bubble {
-      opacity: 1;
-      pointer-events: all;
-    }
+        .small-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
 
-    .founder-bubble {
-      padding: 7px 36px 8px 24px;
-      border-radius: 23px;
-      background: #5cff71;
-      color: #191919;
-      font-weight: 700;
-      font-size: 24px;
-      display: inline-block;
-      box-shadow: 0 1px 8px 0 #21db4f13;
-      letter-spacing: 0;
-      margin-right: 10px;
-    }
+        .edge {
+            color: #8e8e93;
+            font-size: 16px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
 
-    .edge-progress {
-      color: #bdbdbd;
-      font-size: 22px;
-      font-weight: 400;
-      letter-spacing: 0;
-      margin-left: 4px;
-      user-select: none;
-    }
+        .logo {
+            margin-top: 100px;
+            margin-bottom: 100px;
+        }
 
-    /* Logo */
-    .logo-section {
-      margin-top: 80px;
-      margin-bottom: 0;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .logo-img {
-      width: 340px;
-      max-width: 95vw;
-      display: block;
-      height: auto;
-      filter: none;
-      background: transparent;
-      box-shadow: none;
-    }
+        .logo img {
+            width: 400px;
+        }
 
-    /* Luxembourg section */
-    .lux-container {
-      position: fixed;
-      right: 34px;
-      bottom: 34px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-    .lux-info-row {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      color: #bdbdbd;
-      gap: 6px;
-      margin-bottom: 7px;
-      font-weight: 400;
-    }
-    .lux-info-row .lux-country {
-      font-weight: 600;
-      color: #868686;
-      margin-left: 3px;
-      letter-spacing: 0.2px;
-    }
-    .lux-flag-container {
-      position: relative;
-      width: fit-content;
-    }
-    .lux-flag {
-      width: 42px;
-      height: 16px;
-      border-radius: 2px;
-      border: 1.5px solid #f0f0f0;
-      box-shadow: 0 0.5px 2px 0 #c4c4c421;
-      display: block;
-      background: linear-gradient(
-        180deg,
-        #ef3340 0%,
-        #ef3340 33.33%,
-        #fff 33.33%,
-        #fff 66.66%,
-        #00a2e5 66.66%,
-        #00a2e5 100%
-      );
-      margin-left: 10px;
-      margin-top: 0;
-      transition: box-shadow 0.23s;
-      cursor: pointer;
-    }
-    /* Luxembourg bubble */
-    .lux-bubble {
-      position: absolute;
-      right: 50%;
-      top: -41px;
-      transform: translateX(50%);
-      background: #5cff71;
-      color: #191919;
-      font-size: 19px;
-      font-weight: 700;
-      padding: 4px 24px 7px 16px;
-      border-radius: 12px 12px 18px 6px;
-      box-shadow: 0 1px 8px 0 #21db4f25;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.14s;
-      z-index: 18;
-      letter-spacing: 0;
-      text-align: center;
-    }
-    .lux-bubble::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      right: 22px;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 12px solid #5cff71;
-    }
-    .lux-flag:hover + .lux-bubble,
-    .lux-flag:focus + .lux-bubble {
-      opacity: 1;
-      pointer-events: all;
-    }
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8e8e93;
+            font-size: 14px;
+        }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .main-container { padding: 0; }
-      .top-spacer { height: 6vw; min-height: 44px; }
-      .profile-section {
-         flex-direction: column;
-         gap: 16px;
-         margin-bottom: 34px;
-         margin-top: 16vw;
-      }
-      .daniel-container { margin-right: 0; }
-      .daniel-bubble,
-      .lux-bubble {
-        position: static;
-        transform: none;
-        opacity: 1 !important;
-        margin-bottom: 6px;
-        margin-top: 0;
-        pointer-events: none;
-        box-shadow: 0 1px 8px 0 #21db4f16;
-      }
-      .daniel-bubble::after,
-      .lux-bubble::after { display: none; }
-      .founder-bubble {
-        font-size: 18px;
-        padding: 7px 20px 8px 14px;
-      }
-      .edge-progress { font-size: 17px;}
-      .logo-section { margin-top: 24vw; }
-      .logo-img { width: 190px; }
-      .lux-container { 
-        position: static; 
-        margin-top: 24vw; 
-        margin-right: 0vw;
-        margin-bottom: 7vw;
-        align-items: center;
-      }
-      .lux-info-row {
-        justify-content: center;
-        margin-bottom: 5px;
-        font-size: 15px;
-      }
-      .lux-flag { width: 33px; height: 12px; margin-left: 5px;}
-    }
-    @media (max-width: 399px) {
-      .logo-img { width: 84vw; }
-      .profile-section { margin-bottom: 24px;}
-      .main-container { justify-content: flex-start;}
-    }
-  </style>
+        .flag {
+            width: 24px;
+            height: 16px;
+            display: flex;
+            flex-direction: column;
+            margin-left: 5px;
+            position: relative;
+        }
+
+        .red {
+            background-color: #ed2939;
+            height: 33.33%;
+        }
+
+        .white {
+            background-color: #ffffff;
+            height: 33.33%;
+        }
+
+        .blue {
+            background-color: #00a1de;
+            height: 33.33%;
+        }
+
+        .hover-bubble {
+            display: none;
+            background-color: #34c759;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            position: absolute;
+            white-space: nowrap;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .founder .hover-bubble {
+            top: -50px;
+            left: -20px;
+        }
+
+        .flag .hover-bubble {
+            top: -10px;
+            left: 30px;
+        }
+
+        .small-img:hover ~ .hover-bubble {
+            display: block;
+        }
+
+        .flag:hover .hover-bubble {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .logo img {
+                width: 250px;
+            }
+
+            .small-img {
+                display: none;
+            }
+
+            .button span {
+                display: none;
+            }
+
+            .button {
+                font-weight: normal;
+            }
+
+            .button:after {
+                content: "Edge in progress.";
+            }
+
+            .edge {
+                display: none;
+            }
+
+            .flag {
+                display: none;
+            }
+
+            .footer p:after {
+                content: " Luxembourg.";
+            }
+
+            .hover-bubble {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="main-container">
-    <div class="top-spacer"></div>
-    <div class="profile-section">
-      <div class="daniel-container" tabindex="0">
-        <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" 
-             alt="Daniel Morales" class="daniel-img">
-        <div class="daniel-bubble">Daniel</div>
-      </div>
-      <span class="founder-bubble">Founder</span>
-      <span class="edge-progress">Edge in progress.</span>
-    </div>
-    <div class="logo-section">
-      <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" 
-           alt="Nice Trading Logo" class="logo-img">
-    </div>
-    <div class="lux-container">
-      <div class="lux-info-row">
-        Delevoping with love from <span class="lux-country">Luxembourg</span>
-        <div class="lux-flag-container" tabindex="0">
-          <div class="lux-flag" tabindex="0"></div>
-          <div class="lux-bubble">Luxembourg</div>
+    <div class="container">
+        <div class="founder">
+            <div class="button">
+                <img class="small-img" src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" alt="Daniel Morales">
+                <div class="hover-bubble">Daniel</div>
+                <span>Founder</span>
+            </div>
+            <span class="edge">Edge in progress.</span>
         </div>
-      </div>
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Nice%20Trading.png" alt="Nice Trading Algorithm">
+        </div>
+        <div class="footer">
+            <p>Developing with love from</p>
+            <div class="flag">
+                <div class="red"></div>
+                <div class="white"></div>
+                <div class="blue"></div>
+                <div class="hover-bubble">Luxembourg</div>
+            </div>
+        </div>
     </div>
-  </div>
 </body>
 </html>
