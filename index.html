@@ -1,207 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Nice.Trading Algorithm</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    /* Fuente principal: Helvetica World o similar */
-    @font-face {
-      font-family: 'Helvetica World';
-      src: local('Helvetica Neue'), local('Helvetica'), Arial, sans-serif;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      font-family: 'Helvetica World', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-    body {
-      min-height: 100vh;
-      min-width: 100vw;
-      overflow-x: hidden;
-    }
-    /* Contenedor principal, centra absolutamente lo central */
-    .main-container {
-      position: relative;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Centrado vertical absoluto para la sección central */
-    .center-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      min-height: 0;
-      width: 100vw;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    /* Fila horizontal con foto, burbuja verde y subtítulo */
-    .profile-section {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-    }
-    /* Contenedor para la foto y burbuja "Daniel" */
-    .daniel-container {
-      position: relative;
-      width: 64px;
-      height: 64px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      margin-right: 12px;
-    }
-    .daniel-img {
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      object-fit: cover;
-      display: block;
-      background: #eee;
-      border: none;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
-    }
-    .daniel-bubble {
-      position: absolute;
-      left: 50%;
-      top: -50px;
-      transform: translateX(-50%);
-      background: #5cff71;
-      color: #191919;
-      font-weight: 700;
-      font-size: 17px;
-      padding: 6px 14px 7px 14px;
-      border-radius: 10px;
-      box-shadow: 0 1px 8px 0 #21db4f16;
-      opacity: 0;
-      pointer-events: none;
-      white-space: nowrap;
-      transition: opacity 0.15s;
-      z-index: 5;
-      text-align: center;
-    }
-    .daniel-bubble::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 99%;
-      transform: translateX(-50%);
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 12px solid #5cff71;
-    }
-    .daniel-container:hover .daniel-bubble,
-    .daniel-container:focus-within .daniel-bubble {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .founder-bubble {
-      padding: 8px 18px 10px 19px;
-      border-radius: 23px;
-      background: #5cff71;
-      color: #191919;
-      font-weight: 700;
-      font-size: 19px;
-      display: inline-block;
-      box-shadow: 0 1px 8px 0 #21db4f13;
-      margin-right: 10px;
-    }
-    .edge-progress {
-      color: #000000;
-      font-size: 17px;
-      font-weight: 400;
-      margin-left: 0;
-      user-select: none;
-    }
-
-    /* Esquina inferior derecha: banderita y texto horizontal */
-    .lux-container {
-      position: fixed;
-      right: 41px;
-      bottom: 34px;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      font-size: 13px;
-      color: #bdbdbd;
-      font-weight: 400;
-      gap: 6px;
-    }
-    /* Bandera CSS */
-    .lux-flag {
-      width: 32px;
-      height: 19px;
-      border-radius: 2px;
-      border: 1.5px solid #f0f0f0;
-      box-shadow: 0 0.5px 2px 0 #c4c4c421;
-      background: linear-gradient(
-        180deg,
-        #ef3340 0%,
-        #ef3340 33.33%,
-        #fff 33.33%,
-        #fff 66.66%,
-        #00a2e5 66.66%,
-        #00a2e5 100%
-      );
-      margin-left: 4px;
-    }
-
-    /* Responsive: apila elementos verticalmente en mobile */
-    @media (max-width: 600px) {
-      .center-content {
-        min-width: unset;
-        width: 98vw;
-      }
-      .profile-section {
-        flex-direction: column;
-        gap: 16px;
-      }
-      .daniel-container { margin-right: 0; }
-      .lux-container {
-        position: static;
-        align-items: center;
-        justify-content: center;
-        margin-top: 32px;
-        margin-bottom: 10vw;
-        font-size: 14px;
-      }
-      .lux-flag { width: 27px; height: 13px; }
-    }
-    @media (max-width: 399px) {
-      .center-content { width: 100vw; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NICE. TRADING.</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: white;
+            font-family: sans-serif;
+        }
+        #text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 1;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
-  <div class="main-container">
-    <!-- Bloque central perfectamente centrado vertical y horizontal -->
-    <div class="center-content">
-      <div class="profile-section">
-        <div class="daniel-container" tabindex="0">
-          <img src="https://raw.githubusercontent.com/dnlmrls/nicetrading/refs/heads/main/Daniel%20Morales.jpg" 
-              alt="Daniel Morales" class="daniel-img">
-          <div class="daniel-bubble">Daniel</div>
-        </div>
-        <span class="founder-bubble">Gathering Experience</span>
-        <span class="edge-progress">Edge in progress...</span>
-      </div>
-    </div>
-    <!-- Esquina inferior derecha: solo texto y bandera, sin la palabra Luxembourg debajo -->
-    <div class="lux-container">
-      Delevoping with love from <b>Luxembourg</b>
-      <div class="lux-flag" tabindex="0" aria-label="Luxembourg flag"></div>
-    </div>
-  </div>
+    <div id="text">NICE. TRADING.</div>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vertical thick black line in the center
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+
+            // Horizontal wavy lines
+            const spacing = 20; // Adjust spacing between lines for density
+            const amplitude = 5; // Wave height
+            const frequency = 0.002; // Wave width (lower for gentler waves)
+            const lineCount = Math.floor(canvas.height / spacing) + 1;
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = '#a0a0a0'; // Light gray
+
+            for (let i = 0; i < lineCount; i++) {
+                const baseY = i * spacing + 50; // Start a bit down from top to match screenshot spacing
+                ctx.beginPath();
+                ctx.moveTo(0, baseY);
+                for (let x = 0; x <= canvas.width; x++) {
+                    const y = baseY + Math.sin(x * frequency) * amplitude;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
 </body>
 </html>
