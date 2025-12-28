@@ -1,78 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NICE. TRADING.</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: white;
-            font-family: sans-serif;
-        }
-        #text {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: black;
-            font-size: 16px;
-            font-weight: bold;
-            z-index: 1;
-        }
-        canvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>NICE.TRADING</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                   system-ui, -system-ui, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      position: relative;
+    }
+
+    /* Título arriba a la izquierda */
+    .brand {
+      position: fixed;
+      top: 32px;
+      left: 48px;
+      z-index: 10;
+      letter-spacing: 0.32em;
+      font-size: 16px;
+      font-weight: 500;
+      color: #111111;
+      text-transform: uppercase;
+    }
+
+    /* Barra vertical centrada */
+    .center-line {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      transform: translateX(-50%);
+      background: #111111;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    /* Canvas de las líneas animadas */
+    #wavesCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
-    <div id="text">NICE. TRADING.</div>
-    <canvas id="canvas"></canvas>
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+  <div class="brand">NICE.TRADING</div>
+  <div class="center-line"></div>
+  <canvas id="wavesCanvas"></canvas>
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            draw();
+  <script>
+    // Configuración básica
+    const canvas = document.getElementById('wavesCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    // Ajustar tamaño del canvas a pantalla completa
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Parámetros de las ondas
+    const LINE_COUNT = 26;          // Número de líneas horizontales
+    const LINE_COLOR = '#cfcfcf';   // Gris suave
+    const LINE_WIDTH = 1;
+    const NOISE_SCALE_X = 0.0016;   // Frecuencia horizontal
+    const NOISE_SPEED = 0.00035;    // Velocidad de animación
+    const NOISE_AMPLITUDE = 90;     // Altura máxima de las ondas
+
+    // Distribución vertical de las líneas
+    const topMargin = height * 0.10;
+    const bottomMargin = height * 0.10;
+
+    // Utilidad: ruido pseudo-periódico suave usando suma de senos
+    function smoothNoise(x, t, seed) {
+      const f1 = 1.0;
+      const f2 = 2.3;
+      const f3 = 3.7;
+
+      const phase1 = seed * 12.9898;
+      const phase2 = seed * 78.233;
+      const phase3 = seed * 37.719;
+
+      return (
+        0.5  * Math.sin(f1 * x + t + phase1) +
+        0.3  * Math.sin(f2 * x * 0.7 + t * 1.7 + phase2) +
+        0.2  * Math.sin(f3 * x * 1.4 - t * 0.6 + phase3)
+      );
+    }
+
+    // Animación
+    let startTime = null;
+
+    function draw(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = elapsed * NOISE_SPEED;
+
+      // Limpiar fondo
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.lineWidth = LINE_WIDTH;
+      ctx.strokeStyle = LINE_COLOR;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Recalcular márgenes (por si se ha hecho resize)
+      const h = height;
+      const top = topMargin;
+      const bottom = h - bottomMargin;
+      const verticalStep = (bottom - top) / (LINE_COUNT - 1);
+
+      // Recorremos cada línea
+      for (let lineIndex = 0; lineIndex < LINE_COUNT; lineIndex++) {
+        const yBase = top + lineIndex * verticalStep;
+        const seed = lineIndex * 0.35;
+
+        ctx.beginPath();
+
+        // Dibujar de izquierda a derecha
+        const stepX = 6; // resolución horizontal
+
+        for (let x = 0; x <= width; x += stepX) {
+          const nx = x * NOISE_SCALE_X;
+          const n = smoothNoise(nx, t, seed);
+          const offset = n * NOISE_AMPLITUDE;
+
+          const y = yBase + offset;
+
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.stroke();
+      }
 
-            // Vertical thick black line in the center
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 0);
-            ctx.lineTo(canvas.width / 2, canvas.height);
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = 'black';
-            ctx.stroke();
+      requestAnimationFrame(draw);
+    }
 
-            // Horizontal wavy lines
-            const spacing = 20; // Adjust spacing between lines for density
-            const amplitude = 5; // Wave height
-            const frequency = 0.002; // Wave width (lower for gentler waves)
-            const lineCount = Math.floor(canvas.height / spacing) + 1;
-            ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#a0a0a0'; // Light gray
-
-            for (let i = 0; i < lineCount; i++) {
-                const baseY = i * spacing + 50; // Start a bit down from top to match screenshot spacing
-                ctx.beginPath();
-                ctx.moveTo(0, baseY);
-                for (let x = 0; x <= canvas.width; x++) {
-                    const y = baseY + Math.sin(x * frequency) * amplitude;
-                    ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-    </script>
+    requestAnimationFrame(draw);
+  </script>
 </body>
 </html>
