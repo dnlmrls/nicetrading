@@ -7,9 +7,9 @@
 
   <style>
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
     html, body {
@@ -18,155 +18,185 @@
       overflow: hidden;
       background: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                   system-ui, -system-ui, "Segoe UI", Roboto, sans-serif;
+                   system-ui, -system-ui, "Segoe UI", sans-serif;
     }
 
     body {
       position: relative;
-    }
-
-    /* Título arriba a la izquierda */
-    .brand {
-      position: fixed;
-      top: 32px;
-      left: 48px;
-      z-index: 10;
-      letter-spacing: 0.32em;
-      font-size: 16px;
-      font-weight: 500;
       color: #111111;
+    }
+
+    /* Contenedor principal */
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+    }
+
+    /* Título superior izquierda (similar a la captura) */
+    .brand {
+      position: absolute;
+      top: 32px;
+      left: 40px;
+      letter-spacing: 0.35em;
+      font-size: 14px;
       text-transform: uppercase;
-    }
-
-    /* Barra vertical centrada */
-    .center-line {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 2px;
-      transform: translateX(-50%);
-      background: #111111;
-      z-index: 5;
+      font-weight: 500;
+      z-index: 2;
+      color: #111111;
       pointer-events: none;
+      mix-blend-mode: multiply;
     }
 
-    /* Canvas de las líneas animadas */
-    #wavesCanvas {
-      position: fixed;
+    /* Canvas de líneas */
+    #linesCanvas {
+      position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       display: block;
-      z-index: 1;
+      background: #ffffff;
     }
   </style>
 </head>
 <body>
-  <div class="brand">NICE.TRADING</div>
-  <div class="center-line"></div>
-  <canvas id="wavesCanvas"></canvas>
+  <div id="app">
+    <div class="brand">N I C E . T R A D I N G</div>
+    <canvas id="linesCanvas"></canvas>
+  </div>
 
   <script>
-    // Configuración básica
-    const canvas = document.getElementById('wavesCanvas');
-    const ctx = canvas.getContext('2d');
+    (function () {
+      const canvas = document.getElementById("linesCanvas");
+      const ctx = canvas.getContext("2d");
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+      let width = window.innerWidth;
+      let height = window.innerHeight;
 
-    // Ajustar tamaño del canvas a pantalla completa
-    function resize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+      // Parámetros visuales para que se parezca a la captura
+      const NUM_LINES = 26;          // Número de líneas horizontales
+      const LINE_COLOR = "#d3d3d3";  // Gris claro para las líneas
+      const LINE_WIDTH = 0.8;        // Grosor de línea
+      const NOISE_SCALE_X = 0.0022;  // Escala ruido eje X
+      const NOISE_SCALE_T = 0.0004;  // Escala ruido tiempo
+      const AMPLITUDE = 55;          // Amplitud vertical del relieve
+      const LINE_SPACING = 26;       // Distancia vertical entre líneas
+      const POINT_DENSITY = 1.2;     // Distancia entre puntos a lo largo de X
 
-    // Parámetros de las ondas
-    const LINE_COUNT = 26;          // Número de líneas horizontales
-    const LINE_COLOR = '#cfcfcf';   // Gris suave
-    const LINE_WIDTH = 1;
-    const NOISE_SCALE_X = 0.0016;   // Frecuencia horizontal
-    const NOISE_SPEED = 0.00035;    // Velocidad de animación
-    const NOISE_AMPLITUDE = 90;     // Altura máxima de las ondas
+      // Para dar personalidad a cada línea
+      const lineOffsets = [];
 
-    // Distribución vertical de las líneas
-    const topMargin = height * 0.10;
-    const bottomMargin = height * 0.10;
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
 
-    // Utilidad: ruido pseudo-periódico suave usando suma de senos
-    function smoothNoise(x, t, seed) {
-      const f1 = 1.0;
-      const f2 = 2.3;
-      const f3 = 3.7;
+      window.addEventListener("resize", () => {
+        resize();
+        updateBaseY();
+      });
 
-      const phase1 = seed * 12.9898;
-      const phase2 = seed * 78.233;
-      const phase3 = seed * 37.719;
+      resize();
 
-      return (
-        0.5  * Math.sin(f1 * x + t + phase1) +
-        0.3  * Math.sin(f2 * x * 0.7 + t * 1.7 + phase2) +
-        0.2  * Math.sin(f3 * x * 1.4 - t * 0.6 + phase3)
-      );
-    }
+      // ------------ Ruido 2D simple (tipo value noise) ------------
 
-    // Animación
-    let startTime = null;
+      function hash(x, y) {
+        const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+        return s - Math.floor(s);
+      }
 
-    function draw(timestamp) {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const t = elapsed * NOISE_SPEED;
+      function noise2D(x, y) {
+        const ix = Math.floor(x);
+        const iy = Math.floor(y);
+        const fx = x - ix;
+        const fy = y - iy;
 
-      // Limpiar fondo
-      ctx.clearRect(0, 0, width, height);
+        const a = hash(ix, iy);
+        const b = hash(ix + 1, iy);
+        const c = hash(ix, iy + 1);
+        const d = hash(ix + 1, iy + 1);
 
-      ctx.lineWidth = LINE_WIDTH;
-      ctx.strokeStyle = LINE_COLOR;
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
+        const u = fx * fx * (3 - 2 * fx);
+        const v = fy * fy * (3 - 2 * fy);
 
-      // Recalcular márgenes (por si se ha hecho resize)
-      const h = height;
-      const top = topMargin;
-      const bottom = h - bottomMargin;
-      const verticalStep = (bottom - top) / (LINE_COUNT - 1);
+        return (
+          a * (1 - u) * (1 - v) +
+          b * u * (1 - v) +
+          c * (1 - u) * v +
+          d * u * v
+        );
+      }
 
-      // Recorremos cada línea
-      for (let lineIndex = 0; lineIndex < LINE_COUNT; lineIndex++) {
-        const yBase = top + lineIndex * verticalStep;
-        const seed = lineIndex * 0.35;
+      // Inicializar offsets de cada línea
+      for (let i = 0; i < NUM_LINES; i++) {
+        lineOffsets.push({
+          baseY: (height * 0.5) + (i - NUM_LINES / 2) * LINE_SPACING,
+          noiseOffsetX: Math.random() * 1000,
+          noiseOffsetT: Math.random() * 1000,
+        });
+      }
 
-        ctx.beginPath();
+      function updateBaseY() {
+        for (let i = 0; i < NUM_LINES; i++) {
+          lineOffsets[i].baseY =
+            height * 0.5 + (i - NUM_LINES / 2) * LINE_SPACING;
+        }
+      }
 
-        // Dibujar de izquierda a derecha
-        const stepX = 6; // resolución horizontal
+      // -------------------- Bucle de animación --------------------
 
-        for (let x = 0; x <= width; x += stepX) {
-          const nx = x * NOISE_SCALE_X;
-          const n = smoothNoise(nx, t, seed);
-          const offset = n * NOISE_AMPLITUDE;
+      let lastTime = performance.now();
 
-          const y = yBase + offset;
+      function draw(timestamp) {
+        const delta = timestamp - lastTime;
+        lastTime = timestamp;
 
-          if (x === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.lineWidth = LINE_WIDTH;
+        ctx.strokeStyle = LINE_COLOR;
+
+        const t = timestamp; // ms para el ruido
+
+        for (let i = 0; i < NUM_LINES; i++) {
+          const { baseY, noiseOffsetX, noiseOffsetT } = lineOffsets[i];
+
+          ctx.beginPath();
+
+          const step = POINT_DENSITY;
+          let firstPoint = true;
+
+          // hacemos la línea un poco más ancha que la pantalla para evitar cortes en los bordes
+          for (let x = -40; x <= width + 40; x += step) {
+            const nx = (x + noiseOffsetX) * NOISE_SCALE_X;
+            const nt = (t * NOISE_SCALE_T) + noiseOffsetT;
+
+            const n = noise2D(nx, nt) - 0.5; // rango [-0.5, 0.5]
+            const y = baseY + n * AMPLITUDE;
+
+            if (firstPoint) {
+              ctx.moveTo(x, y);
+              firstPoint = false;
+            } else {
+              ctx.lineTo(x, y);
+            }
           }
+
+          ctx.stroke();
         }
 
-        ctx.stroke();
+        // Sin barra vertical en el centro: NO dibujamos nada ahí.
+
+        requestAnimationFrame(draw);
       }
 
       requestAnimationFrame(draw);
-    }
-
-    requestAnimationFrame(draw);
+    })();
   </script>
 </body>
 </html>
