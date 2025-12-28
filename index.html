@@ -1,202 +1,544 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>NICE.TRADING</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>David Morales | Information Security</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        @font-face {
+            font-family: 'JetBrains Mono';
+            src: url('https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPVmUsaaDhw.woff2') format('woff2');
+        }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                   system-ui, -system-ui, "Segoe UI", sans-serif;
-    }
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    body {
-      position: relative;
-      color: #111111;
-    }
+        /* Canvas para las líneas de trading */
+        #tradingCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
 
-    /* Contenedor principal */
-    #app {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: #ffffff;
-    }
+        /* Efecto de scanlines */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
 
-    /* Título superior izquierda (similar a la captura) */
-    .brand {
-      position: absolute;
-      top: 32px;
-      left: 40px;
-      letter-spacing: 0.35em;
-      font-size: 14px;
-      text-transform: uppercase;
-      font-weight: 500;
-      z-index: 2;
-      color: #111111;
-      pointer-events: none;
-      mix-blend-mode: multiply;
-    }
+        /* Contenedor principal */
+        .container {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            padding: 60px;
+            gap: 80px;
+        }
 
-    /* Canvas de líneas */
-    #linesCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      background: #ffffff;
-    }
-  </style>
+        /* Sección izquierda */
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .name {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .description {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #888;
+            max-width: 500px;
+        }
+
+        .description p {
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: #00ff88;
+        }
+
+        /* Sección derecha */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 40px;
+        }
+
+        .contact-block {
+            margin-bottom: 50px;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .contact-value {
+            font-size: 1rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            display: inline-block;
+        }
+
+        .contact-value:hover {
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Links sociales */
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .social-link {
+            font-size: 0.9rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .social-link::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: #00ff88;
+            padding-left: 25px;
+        }
+
+        .social-link:hover::before {
+            color: #00ff88;
+        }
+
+        /* Certificaciones */
+        .certifications {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #222;
+        }
+
+        .cert-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border: 1px solid #333;
+            color: #00ff88;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cert-badge:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        /* Footer con efecto de terminal */
+        .terminal-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 60px;
+            font-size: 0.75rem;
+            color: #333;
+            z-index: 3;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #00ff88;
+            margin-left: 5px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Efecto de ruido */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 40px 30px;
+                gap: 60px;
+            }
+
+            .name {
+                font-size: 2.5rem;
+            }
+
+            .right-section {
+                padding-left: 0;
+            }
+
+            .terminal-footer {
+                left: 30px;
+            }
+        }
+
+        /* Efecto de vignette */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        }
+    </style>
 </head>
 <body>
-  <div id="app">
-    <div class="brand">N I C E . T R A D I N G</div>
-    <canvas id="linesCanvas"></canvas>
-  </div>
+    <!-- Canvas para líneas de trading -->
+    <canvas id="tradingCanvas"></canvas>
+    
+    <!-- Efectos visuales -->
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+    <div class="vignette"></div>
 
-  <script>
-    (function () {
-      const canvas = document.getElementById("linesCanvas");
-      const ctx = canvas.getContext("2d");
+    <!-- Contenido principal -->
+    <div class="container">
+        <div class="left-section">
+            <h1 class="name">David Morales</h1>
+            <p class="title">Information Security Officer</p>
+            <div class="description">
+                <p>
+                    Cybersecurity professional with expertise in <span class="highlight">penetration testing</span>, 
+                    attack surface management, and security operations. Currently focused on 
+                    <span class="highlight">security management</span> and strategic leadership roles.
+                </p>
+                <p>
+                    Experience spanning red team operations, vulnerability management, 
+                    cyber threat intelligence, and SOC operations. Building secure systems 
+                    and leading security initiatives in Copenhagen.
+                </p>
+            </div>
 
-      let width = window.innerWidth;
-      let height = window.innerHeight;
+            <div class="certifications">
+                <span class="cert-badge">CISSP</span>
+                <span class="cert-badge">Security+</span>
+                <span class="cert-badge">Red Team</span>
+            </div>
+        </div>
 
-      // Parámetros visuales para que se parezca a la captura
-      const NUM_LINES = 26;          // Número de líneas horizontales
-      const LINE_COLOR = "#d3d3d3";  // Gris claro para las líneas
-      const LINE_WIDTH = 0.8;        // Grosor de línea
-      const NOISE_SCALE_X = 0.0022;  // Escala ruido eje X
-      const NOISE_SCALE_T = 0.0004;  // Escala ruido tiempo
-      const AMPLITUDE = 55;          // Amplitud vertical del relieve
-      const LINE_SPACING = 26;       // Distancia vertical entre líneas
-      const POINT_DENSITY = 1.2;     // Distancia entre puntos a lo largo de X
+        <div class="right-section">
+            <div class="contact-block">
+                <p class="contact-label">Location</p>
+                <p class="contact-value">Copenhagen, Denmark</p>
+            </div>
 
-      // Para dar personalidad a cada línea
-      const lineOffsets = [];
+            <div class="contact-block">
+                <p class="contact-label">Credentials</p>
+                <a href="https://www.credly.com/users/damorales" target="_blank" class="contact-value">
+                    credly.com/users/damorales
+                </a>
+            </div>
 
-      function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
+            <div class="contact-block">
+                <p class="contact-label">Connect</p>
+                <div class="social-links">
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank" class="social-link">LinkedIn</a>
+                    <a href="https://github.com/yourprofile" target="_blank" class="social-link">GitHub</a>
+                    <a href="mailto:your@email.com" class="social-link">Email</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-      window.addEventListener("resize", () => {
-        resize();
-        updateBaseY();
-      });
+    <!-- Footer tipo terminal -->
+    <div class="terminal-footer">
+        <span>security@copenhagen:~$</span>
+        <span class="cursor"></span>
+    </div>
 
-      resize();
+    <script>
+        // ============================================
+        // TRADING LINES ANIMATION - Similar a gráficos de precio
+        // ============================================
+        
+        const canvas = document.getElementById('tradingCanvas');
+        const ctx = canvas.getContext('2d');
 
-      // ------------ Ruido 2D simple (tipo value noise) ------------
+        let width, height;
+        let lines = [];
+        const numLines = 25; // Número de líneas paralelas
 
-      function hash(x, y) {
-        const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-        return s - Math.floor(s);
-      }
+        // Configuración de las líneas
+        const lineConfig = {
+            baseSpeed: 0.5,
+            volatility: 2,
+            segmentWidth: 3,
+            colors: [
+                'rgba(0, 255, 136, 0.3)',   // Verde
+                'rgba(0, 200, 255, 0.25)',  // Cyan
+                'rgba(255, 100, 100, 0.2)', // Rojo
+                'rgba(150, 150, 150, 0.15)' // Gris
+            ]
+        };
 
-      function noise2D(x, y) {
-        const ix = Math.floor(x);
-        const iy = Math.floor(y);
-        const fx = x - ix;
-        const fy = y - iy;
-
-        const a = hash(ix, iy);
-        const b = hash(ix + 1, iy);
-        const c = hash(ix, iy + 1);
-        const d = hash(ix + 1, iy + 1);
-
-        const u = fx * fx * (3 - 2 * fx);
-        const v = fy * fy * (3 - 2 * fy);
-
-        return (
-          a * (1 - u) * (1 - v) +
-          b * u * (1 - v) +
-          c * (1 - u) * v +
-          d * u * v
-        );
-      }
-
-      // Inicializar offsets de cada línea
-      for (let i = 0; i < NUM_LINES; i++) {
-        lineOffsets.push({
-          baseY: (height * 0.5) + (i - NUM_LINES / 2) * LINE_SPACING,
-          noiseOffsetX: Math.random() * 1000,
-          noiseOffsetT: Math.random() * 1000,
-        });
-      }
-
-      function updateBaseY() {
-        for (let i = 0; i < NUM_LINES; i++) {
-          lineOffsets[i].baseY =
-            height * 0.5 + (i - NUM_LINES / 2) * LINE_SPACING;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initLines();
         }
-      }
 
-      // -------------------- Bucle de animación --------------------
+        function initLines() {
+            lines = [];
+            const spacing = height / (numLines + 1);
 
-      let lastTime = performance.now();
+            for (let i = 0; i < numLines; i++) {
+                const baseY = spacing * (i + 1);
+                const points = [];
+                const numPoints = Math.ceil(width / lineConfig.segmentWidth) + 10;
 
-      function draw(timestamp) {
-        const delta = timestamp - lastTime;
-        lastTime = timestamp;
+                // Generar puntos iniciales para cada línea
+                let currentY = baseY;
+                for (let j = 0; j < numPoints; j++) {
+                    // Movimiento tipo random walk (como precios)
+                    const change = (Math.random() - 0.5) * lineConfig.volatility;
+                    currentY += change;
+                    
+                    // Mantener dentro de un rango
+                    const maxDeviation = spacing * 0.4;
+                    if (currentY > baseY + maxDeviation) currentY = baseY + maxDeviation;
+                    if (currentY < baseY - maxDeviation) currentY = baseY - maxDeviation;
 
-        ctx.clearRect(0, 0, width, height);
+                    points.push({
+                        x: j * lineConfig.segmentWidth,
+                        y: currentY
+                    });
+                }
 
-        ctx.lineWidth = LINE_WIDTH;
-        ctx.strokeStyle = LINE_COLOR;
-
-        const t = timestamp; // ms para el ruido
-
-        for (let i = 0; i < NUM_LINES; i++) {
-          const { baseY, noiseOffsetX, noiseOffsetT } = lineOffsets[i];
-
-          ctx.beginPath();
-
-          const step = POINT_DENSITY;
-          let firstPoint = true;
-
-          // hacemos la línea un poco más ancha que la pantalla para evitar cortes en los bordes
-          for (let x = -40; x <= width + 40; x += step) {
-            const nx = (x + noiseOffsetX) * NOISE_SCALE_X;
-            const nt = (t * NOISE_SCALE_T) + noiseOffsetT;
-
-            const n = noise2D(nx, nt) - 0.5; // rango [-0.5, 0.5]
-            const y = baseY + n * AMPLITUDE;
-
-            if (firstPoint) {
-              ctx.moveTo(x, y);
-              firstPoint = false;
-            } else {
-              ctx.lineTo(x, y);
+                lines.push({
+                    baseY: baseY,
+                    points: points,
+                    color: lineConfig.colors[i % lineConfig.colors.length],
+                    speed: lineConfig.baseSpeed + Math.random() * 0.3,
+                    lineWidth: 1 + Math.random() * 0.5
+                });
             }
-          }
-
-          ctx.stroke();
         }
 
-        // Sin barra vertical en el centro: NO dibujamos nada ahí.
+        function updateLines() {
+            lines.forEach(line => {
+                // Mover todos los puntos hacia la izquierda
+                line.points.forEach(point => {
+                    point.x -= line.speed;
+                });
 
-        requestAnimationFrame(draw);
-      }
+                // Eliminar puntos que salen de la pantalla
+                while (line.points.length > 0 && line.points[0].x < -lineConfig.segmentWidth) {
+                    line.points.shift();
+                }
 
-      requestAnimationFrame(draw);
-    })();
-  </script>
+                // Agregar nuevos puntos al final
+                while (line.points.length === 0 || line.points[line.points.length - 1].x < width + lineConfig.segmentWidth) {
+                    const lastPoint = line.points.length > 0 
+                        ? line.points[line.points.length - 1] 
+                        : { x: 0, y: line.baseY };
+
+                    // Nuevo punto con movimiento tipo precio
+                    const change = (Math.random() - 0.5) * lineConfig.volatility;
+                    let newY = lastPoint.y + change;
+
+                    // Mantener dentro del rango
+                    const maxDeviation = (height / (numLines + 1)) * 0.4;
+                    if (newY > line.baseY + maxDeviation) newY = line.baseY + maxDeviation;
+                    if (newY < line.baseY - maxDeviation) newY = line.baseY - maxDeviation;
+
+                    line.points.push({
+                        x: lastPoint.x + lineConfig.segmentWidth,
+                        y: newY
+                    });
+                }
+            });
+        }
+
+        function drawLines() {
+            ctx.clearRect(0, 0, width, height);
+
+            lines.forEach(line => {
+                if (line.points.length < 2) return;
+
+                ctx.beginPath();
+                ctx.strokeStyle = line.color;
+                ctx.lineWidth = line.lineWidth;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                ctx.moveTo(line.points[0].x, line.points[0].y);
+
+                for (let i = 1; i < line.points.length; i++) {
+                    ctx.lineTo(line.points[i].x, line.points[i].y);
+                }
+
+                ctx.stroke();
+
+                // Opcional: añadir un brillo sutil
+                ctx.shadowBlur = 3;
+                ctx.shadowColor = line.color;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function animate() {
+            updateLines();
+            drawLines();
+            requestAnimationFrame(animate);
+        }
+
+        // Inicialización
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+
+        // ============================================
+        // EFECTO DE TYPING EN EL TERMINAL
+        // ============================================
+        
+        const terminalText = document.querySelector('.terminal-footer span:first-child');
+        const commands = [
+            'security@copenhagen:~$ ',
+            'scanning vulnerabilities...',
+            'security@copenhagen:~$ ',
+            'analyzing threat vectors...',
+            'security@copenhagen:~$ ',
+            'securing perimeter...',
+            'security@copenhagen:~$ '
+        ];
+        
+        let commandIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isPaused = false;
+
+        function typeCommand() {
+            const currentCommand = commands[commandIndex];
+            
+            if (isPaused) {
+                setTimeout(typeCommand, 2000);
+                isPaused = false;
+                isDeleting = true;
+                return;
+            }
+
+            if (!isDeleting) {
+                terminalText.textContent = currentCommand.substring(0, charIndex + 1);
+                charIndex++;
+
+                if (charIndex === currentCommand.length) {
+                    isPaused = true;
+                }
+            } else {
+                terminalText.textContent = currentCommand.substring(0, charIndex - 1);
+                charIndex--;
+
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    commandIndex = (commandIndex + 1) % commands.length;
+                }
+            }
+
+            const speed = isDeleting ? 30 : 80;
+            setTimeout(typeCommand, speed);
+        }
+
+        setTimeout(typeCommand, 1500);
+
+        // ============================================
+        // EFECTO PARALLAX SUTIL EN MOUSE MOVE
+        // ============================================
+        
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - width / 2) * 0.01;
+            const moveY = (e.clientY - height / 2) * 0.01;
+
+            document.querySelector('.container').style.transform = 
+                `translate(${moveX}px, ${moveY}px)`;
+        });
+    </script>
 </body>
 </html>
